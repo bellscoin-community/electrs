@@ -2,6 +2,26 @@ use std::collections::HashMap;
 
 use bitcoin::blockdata::block::Header as BlockHeader;
 use bitcoin::{BlockHash, Network};
+use bitcoin::hash_types::{TxMerkleNode};
+use bitcoin::blockdata::block::Block;
+
+use bitcoin::pow::CompactTarget;
+
+use bitcoin::hashes::{sha256d, Hash};
+use hex::FromHex;
+
+use core::default::Default;
+
+use hex_lit::hex as hex_lib;
+
+use bitcoin::blockdata::transaction::{self, OutPoint, Sequence, Transaction, TxIn, TxOut};
+use bitcoin::blockdata::locktime::absolute;
+use bitcoin::blockdata::opcodes::all::*;
+use bitcoin::blockdata::script;
+use bitcoin::blockdata::witness::Witness;
+use bitcoin::Amount;
+
+use bitcoin::blockdata::script::{write_scriptint, PushBytes};
 
 /// A new header found, to be added to the chain at specific height
 pub(crate) struct NewHeader {
@@ -36,13 +56,97 @@ pub struct Chain {
 
 impl Chain {
     // create an empty chain
-    pub fn new(network: Network) -> Self {
-        let genesis = bitcoin::blockdata::constants::genesis_block(network);
+    pub fn new(_network: Network) -> Self {
+        let genesis = Self::get_block();
         
         let genesis_hash = genesis.block_hash();
         Self {
             headers: vec![(genesis_hash, genesis.header)],
             heights: std::iter::once((genesis_hash, 0)).collect(), // genesis header @ zero height
+        }
+    }
+
+    pub(self) fn hash_u8(hash: &str) -> Vec<u8> {
+        let data = match <[u8; 64]>::from_hex(hash) {
+            Ok(res) => res.to_vec(), // Convert array to Vec
+            Err(_) => panic!("Cannot convert hash")
+        };
+
+        data // Return the owned Vec<u8>
+    }
+
+    pub(self) fn hash_from_str(hash: &str) -> sha256d::Hash {
+        return sha256d::Hash::hash(&Self::hash_u8(hash));
+    }
+
+    pub(self) fn push_int_non_minimal(builder: script::Builder, data: i64) -> script::Builder {
+        let mut buf = [0u8; 8];
+        let len = write_scriptint(&mut buf, data);
+        builder.push_slice(&<&PushBytes>::from(&buf)[..len])
+    }
+
+    pub(self) fn bells_genesis_tx() -> Transaction {
+        // Base
+        let mut ret = Transaction {
+            version: transaction::Version::ONE,
+            lock_time: absolute::LockTime::ZERO,
+            input: vec![],
+            output: vec![],
+        };
+
+        // Inputs
+        let in_builder: script::Builder = script::Builder::new()
+            .push_int(486604799);
+
+        let in_script = Self::push_int_non_minimal(in_builder, 4).push_slice(b"Nintondo").into_script();
+
+        ret.input.push(TxIn {
+            previous_output: OutPoint::null(),
+            script_sig: in_script,
+            sequence: Sequence::MAX,
+            witness: Witness::default(),
+        });
+
+        // Outputs
+        let script_bytes = hex_lib!("040184710fa689ad5023690c80f3a49c8f13f8d45b8c857fbcbc8bc4a8e4d3eb4b10f4d4604fa08dce601aaf0f470216fe1b51850b4acf21b179c45070ac7b03a9");
+        let out_script =
+            script::Builder::new().push_slice(script_bytes).push_opcode(OP_CHECKSIG).into_script();
+
+        let value: u64 = 88 * 100_000_000;
+        let btc_value: Amount = Amount::from_sat(value);
+
+        ret.output.push(TxOut { value: btc_value, script_pubkey: out_script });
+
+        // end
+        ret
+    }
+
+    pub(self) fn get_block() -> Block {
+        let genesis_hash = Self::hash_from_str("5b2a3f53f605d62c53e62932dac6925e3d74afa5a4b459745c36d42d0ed26a69");
+        let prev_hash = Self::hash_u8("0000000000000000000000000000000000000000000000000000000000000000");
+
+        let merkle_root: TxMerkleNode = genesis_hash.into();
+        let prev_blockhash: BlockHash = BlockHash::hash(&prev_hash);
+
+        let header = BlockHeader {
+            version: bitcoin::blockdata::block::Version::ONE,
+            prev_blockhash,
+            merkle_root,
+            time: 1383509530,
+            bits: CompactTarget::from_consensus(0x1e0ffff0),
+            nonce: 44481,
+        };
+
+        let txdata = vec![Self::bells_genesis_tx()];
+
+        let hash: sha256d::Hash = txdata[0].txid().into();
+        let merkle_root_verif: TxMerkleNode = hash.into();
+
+        info!("Root {} === {}", merkle_root_verif, merkle_root);
+
+        return Block {
+            header,
+            txdata,
         }
     }
 

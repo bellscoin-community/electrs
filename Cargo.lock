@@ -368,6 +368,7 @@ dependencies = [
  "dirs-next",
  "electrs-rocksdb",
  "env_logger",
+ "hex",
  "hex_lit",
  "log",
  "parking_lot",
