@@ -110,7 +110,7 @@ impl Chain {
         // Outputs
         let script_bytes = hex_lib!("040184710fa689ad5023690c80f3a49c8f13f8d45b8c857fbcbc8bc4a8e4d3eb4b10f4d4604fa08dce601aaf0f470216fe1b51850b4acf21b179c45070ac7b03a9");
         let out_script =
-            script::Builder::new().push_slice(script_bytes).push_opcode(OP_CHECKSIG).into_script();
+            script::Builder::new().push_slice(script_bytes).push_opcode(0xac).into_script();
 
         let value: u64 = 88 * 100_000_000;
         let btc_value: Amount = Amount::from_sat(value);
@@ -128,6 +128,8 @@ impl Chain {
         let merkle_root: TxMerkleNode = genesis_hash.into();
         let prev_blockhash: BlockHash = BlockHash::hash(&prev_hash);
 
+        print!("test {}", prev_blockhash);
+
         let header = BlockHeader {
             version: bitcoin::blockdata::block::Version::ONE,
             prev_blockhash,
@@ -143,6 +145,8 @@ impl Chain {
         let merkle_root_verif: TxMerkleNode = hash.into();
 
         info!("Root {} === {}", merkle_root_verif, merkle_root);
+
+        //assert_eq(merkle_root_verif, merkle_root);
 
         return Block {
             header,
