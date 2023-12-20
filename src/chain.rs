@@ -131,7 +131,7 @@ impl Chain {
         let merkle_root: TxMerkleNode = genesis_hash.into();
         let prev_blockhash: BlockHash = BlockHash::hash(&prev_hash);
 
-        print!("test {}", &prev_hash);
+        print!("test {}", prev_blockhash);
 
         let header = BlockHeader {
             version: bitcoin::blockdata::block::Version::ONE,
