@@ -142,7 +142,7 @@ impl Chain {
 
         let block = Block {
             header,
-            tx_data,
+            txdata: tx_data,
         };
 
         info!("Genesis Block Hash set to {}", block.block_hash());
