@@ -38,7 +38,12 @@ impl Tracker {
             config.db_log_dir.as_deref(),
             config.auto_reindex,
         )?;
+
+        info!("db opened.");
+
         let chain = Chain::new(config.network);
+        info!("chain created.");
+
         Ok(Self {
             index: Index::load(
                 store,
@@ -48,7 +53,7 @@ impl Tracker {
                 config.index_lookup_limit,
                 config.reindex_last_blocks,
             )
-            .context("failed to open index")?,
+                .context("failed to open index")?,
             mempool: Mempool::new(&metrics),
             metrics,
             ignore_mempool: config.ignore_mempool,
