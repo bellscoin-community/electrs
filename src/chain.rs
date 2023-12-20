@@ -122,8 +122,10 @@ impl Chain {
     }
 
     pub(self) fn get_block() -> Block {
-        let genesis_hash = sha256d::Hash::hash(hex_lib!("5b2a3f53f605d62c53e62932dac6925e3d74afa5a4b459745c36d42d0ed26a69")); //Self::hash_from_str("");
+        let genesis_hash_vec = hex_lib!("5b2a3f53f605d62c53e62932dac6925e3d74afa5a4b459745c36d42d0ed26a69");
+        let genesis_hash = sha256d::Hash::hash(genesis_hash_vec); //Self::hash_from_str("");
         //let prev_hash = Self::hash_u8("0000000000000000000000000000000000000000000000000000000000000000");
+
         let prev_hash = hex_lib!("0000000000000000000000000000000000000000000000000000000000000000");
 
         let merkle_root: TxMerkleNode = genesis_hash.into();
