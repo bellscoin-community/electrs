@@ -115,8 +115,6 @@ impl Daemon {
 
         let mut rpc = rpc_connect(config)?;
 
-        info!("im i connected?");
-
         loop {
             exit_flag
                 .poll()
@@ -124,10 +122,12 @@ impl Daemon {
 
             match rpc_poll(&mut rpc, config.skip_block_download_wait) {
                 PollResult::Done(result) => {
+                    info!("RPC polling failed");
                     result.context("bitcoind RPC polling failed")?;
                     break; // on success, finish polling
                 }
                 PollResult::Retry => {
+                    info!("retrying to poll.");
                     std::thread::sleep(std::time::Duration::from_secs(1)); // wait a bit before polling
                 }
             }
