@@ -75,9 +75,9 @@ impl Chain {
         data // Return the owned Vec<u8>
     }
 
-    pub(self) fn hash_from_str(hash: &str) -> sha256d::Hash {
-        return sha256d::Hash::hash(&Self::hash_u8(hash));
-    }
+    //pub(self) fn hash_from_str(hash: &str) -> sha256d::Hash {
+    //    return sha256d::Hash::hash(&Self::hash_u8(hash));
+    //}
 
     pub(self) fn push_int_non_minimal(builder: script::Builder, data: i64) -> script::Builder {
         let mut buf = [0u8; 8];
@@ -122,7 +122,7 @@ impl Chain {
     }
 
     pub(self) fn get_block() -> Block {
-        let prev_hash = Self::hash_u8("0000000000000000000000000000000000000000000000000000000000000000");
+        let prev_hash = hex_lib!("0000000000000000000000000000000000000000000000000000000000000000"); //Self::hash_u8("0000000000000000000000000000000000000000000000000000000000000000");
         let prev_blockhash: BlockHash = BlockHash::hash(&prev_hash);
 
         let txdata = vec![Self::bells_genesis_tx()];
