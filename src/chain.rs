@@ -122,19 +122,18 @@ impl Chain {
     }
 
     pub(self) fn get_block() -> Block {
-        let prev_hash = Self::hash_u8("0000000000000000000000000000000000000000000000000000000000000000");
-        let prev_blockhash: BlockHash = BlockHash::hash(&prev_hash);
+        //let prev_hash = Self::hash_u8("0000000000000000000000000000000000000000000000000000000000000000");
 
-        let txdata = vec![Self::bells_genesis_tx()];
+        let tx_data = vec![Self::bells_genesis_tx()];
 
-        let hash: sha256d::Hash = txdata[0].txid().into();
+        let hash: sha256d::Hash = tx_data[0].txid().into();
         let merkle_root: TxMerkleNode = hash.into();
 
         info!("Genesis Merkel Root set to {}", merkle_root);
 
         let header = BlockHeader {
             version: bitcoin::blockdata::block::Version::ONE,
-            prev_blockhash,
+            prev_blockhash: Hash::all_zeros(),
             merkle_root,
             time: 1383509530,
             bits: CompactTarget::from_consensus(0x1e0ffff0_u32),
@@ -143,10 +142,10 @@ impl Chain {
 
         let block = Block {
             header,
-            txdata,
+            tx_data,
         };
 
-        info!("block hash is {}", block.block_hash());
+        info!("Genesis Block Hash set to {}", block.block_hash());
 
         return block;
     }
