@@ -136,12 +136,15 @@ impl Daemon {
             bail!("electrs requires non-pruned bitcoind node");
         }
 
+        info!("testing daemon...");
+
         let p2p = Mutex::new(Connection::connect(
             config.network,
             config.daemon_p2p_addr,
             metrics,
             config.signet_magic,
         )?);
+        
         Ok(Self { p2p, rpc })
     }
 
