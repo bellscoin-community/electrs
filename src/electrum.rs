@@ -139,10 +139,24 @@ impl Rpc {
             metrics::default_duration_buckets(),
         );
 
+        info!("starting new rpc...");
+
         let tracker = Tracker::new(config, metrics)?;
+
+        info!("tracker created.");
+
         let signal = Signal::new();
+
+        info!("connecting to daemon...");
+
         let daemon = Daemon::connect(config, signal.exit_flag(), tracker.metrics())?;
+
+        info!("daemon connected");
+
         let cache = Cache::new(tracker.metrics());
+
+        info!("test 4");
+
         Ok(Self {
             tracker,
             cache,
@@ -444,7 +458,7 @@ impl Rpc {
             VersionRequest::Single(exact) => check_between(PROTOCOL_VERSION, exact, exact),
             VersionRequest::MinMax(min, max) => check_between(PROTOCOL_VERSION, min, max),
         }
-        .with_context(|| format!("unsupported request {:?} by {}", client_version, client_id))?;
+            .with_context(|| format!("unsupported request {:?} by {}", client_version, client_id))?;
         Ok(json!([self.server_id(), PROTOCOL_VERSION]))
     }
 
@@ -678,8 +692,8 @@ impl Calls {
 }
 
 fn convert<T>(params: Value) -> std::result::Result<T, StandardError>
-where
-    T: serde::de::DeserializeOwned,
+    where
+        T: serde::de::DeserializeOwned,
 {
     let params_str = params.to_string();
     serde_json::from_value(params).map_err(|err| {

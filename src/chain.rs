@@ -8,7 +8,7 @@ use bitcoin::blockdata::block::Block;
 use bitcoin::pow::CompactTarget;
 
 use bitcoin::hashes::{sha256d, Hash};
-use hex::FromHex;
+//use hex::FromHex;
 
 use core::default::Default;
 
@@ -66,14 +66,14 @@ impl Chain {
         }
     }
 
-    pub(self) fn hash_u8(hash: &str) -> Vec<u8> {
+    /*pub(self) fn hash_u8(hash: &str) -> Vec<u8> {
         let data = match <[u8; 32]>::from_hex(hash) {
             Ok(res) => res.to_vec(), // Convert array to Vec
             Err(err) => panic!("{}", err)
         };
 
         data // Return the owned Vec<u8>
-    }
+    }*/
 
     //pub(self) fn hash_from_str(hash: &str) -> sha256d::Hash {
     //    return sha256d::Hash::hash(&Self::hash_u8(hash));
@@ -122,8 +122,6 @@ impl Chain {
     }
 
     pub(self) fn get_block() -> Block {
-        //let prev_hash = Self::hash_u8("0000000000000000000000000000000000000000000000000000000000000000");
-
         let tx_data = vec![Self::bells_genesis_tx()];
 
         let hash: sha256d::Hash = tx_data[0].txid().into();
