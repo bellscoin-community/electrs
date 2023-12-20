@@ -27,10 +27,13 @@ enum PollResult {
 fn rpc_poll(client: &mut Client, skip_block_download_wait: bool) -> PollResult {
     match client.get_blockchain_info() {
         Ok(info) => {
+            print!("RPC connected! Current block header {}", info.blocks);
+
             if skip_block_download_wait {
                 // bitcoind RPC is available, don't wait for block download to finish
                 return PollResult::Done(Ok(()));
             }
+
             let left_blocks = info.headers - info.blocks;
             if info.initial_block_download || left_blocks > 0 {
                 info!(
@@ -47,6 +50,8 @@ fn rpc_poll(client: &mut Client, skip_block_download_wait: bool) -> PollResult {
             PollResult::Done(Ok(()))
         }
         Err(err) => {
+            print!("Pooling failed {}", err);
+
             if let Some(e) = extract_bitcoind_error(&err) {
                 if e.code == -28 {
                     debug!("waiting for RPC warmup: {}", e.message);
