@@ -122,7 +122,7 @@ impl Chain {
     }
 
     pub(self) fn get_block() -> Block {
-        let genesis_hash = Self::hash_from_str("5b2a3f53f605d62c53e62932dac6925e3d74afa5a4b459745c36d42d0ed26a69");
+        let genesis_hash = Self::hash_from_str("e5be24df57c43a82d15c2f06bda961296948f8f8eb48501bed1efb929afe0698");
         let prev_hash = Self::hash_u8("0000000000000000000000000000000000000000000000000000000000000000");
 
         let merkle_root: TxMerkleNode = genesis_hash.into();
