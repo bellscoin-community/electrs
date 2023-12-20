@@ -8,7 +8,7 @@ use bitcoin::blockdata::block::Block;
 use bitcoin::pow::CompactTarget;
 
 use bitcoin::hashes::{sha256d, Hash};
-use hex::FromHex;
+// use hex::FromHex;
 
 use core::default::Default;
 
@@ -66,7 +66,7 @@ impl Chain {
         }
     }
 
-    /*pub(self) fn hash_u8(hash: &str) -> Vec<u8> {
+    pub(self) fn hash_u8(hash: &str) -> Vec<u8> {
         let data = match <[u8; 32]>::from_hex(hash) {
             Ok(res) => res.to_vec(), // Convert array to Vec
             Err(err) => panic!("{}", err)
@@ -76,8 +76,8 @@ impl Chain {
     }
 
     pub(self) fn hash_from_str(hash: &str) -> sha256d::Hash {
-        return sha256d::Hash::hash(hex_lib!(hash)); //&Self::hash_u8(hash)
-    }*/
+        return sha256d::Hash::hash(&Self::hash_u8(hash));
+    }
 
     pub(self) fn push_int_non_minimal(builder: script::Builder, data: i64) -> script::Builder {
         let mut buf = [0u8; 8];
@@ -122,16 +122,14 @@ impl Chain {
     }
 
     pub(self) fn get_block() -> Block {
-        let genesis_hash_vec = hex_lib!("5b2a3f53f605d62c53e62932dac6925e3d74afa5a4b459745c36d42d0ed26a69");
-        let genesis_hash = sha256d::Hash::hash(&genesis_hash_vec); //Self::hash_from_str("");
-        //let prev_hash = Self::hash_u8("0000000000000000000000000000000000000000000000000000000000000000");
-
-        let prev_hash = hex_lib!("0000000000000000000000000000000000000000000000000000000000000000");
-
-        let merkle_root: TxMerkleNode = genesis_hash.into();
         let prev_blockhash: BlockHash = BlockHash::hash(&prev_hash);
 
-        print!("test {}", prev_blockhash);
+        let txdata = vec![Self::bells_genesis_tx()];
+
+        let hash: sha256d::Hash = txdata[0].txid().into();
+        let merkle_root: TxMerkleNode = hash.into();
+
+        info!("Genesis Merkel Root set to {}", merkle_root);
 
         let header = BlockHeader {
             version: bitcoin::blockdata::block::Version::ONE,
@@ -141,15 +139,6 @@ impl Chain {
             bits: CompactTarget::from_consensus(0x1e0ffff0_u32),
             nonce: 44481,
         };
-
-        let txdata = vec![Self::bells_genesis_tx()];
-
-        let hash: sha256d::Hash = txdata[0].txid().into();
-        let merkle_root_verif: TxMerkleNode = hash.into();
-
-        info!("Root {} === {}", merkle_root_verif, merkle_root);
-
-        //assert_eq(merkle_root_verif, merkle_root);
 
         let block = Block {
             header,
