@@ -135,7 +135,7 @@ impl Chain {
             prev_blockhash,
             merkle_root,
             time: 1383509530,
-            bits: CompactTarget::from_consensus(0x1e0ffff0),
+            bits: CompactTarget::from_consensus(0x1e0ffff0_u32),
             nonce: 44481,
         };
 
@@ -148,10 +148,14 @@ impl Chain {
 
         //assert_eq(merkle_root_verif, merkle_root);
 
-        return Block {
+        let block = Block {
             header,
             txdata,
-        }
+        };
+
+        info!("block hash is {}", block.block_hash());
+
+        return block;
     }
 
     pub(crate) fn drop_last_headers(&mut self, n: usize) {
