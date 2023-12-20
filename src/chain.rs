@@ -122,6 +122,7 @@ impl Chain {
     }
 
     pub(self) fn get_block() -> Block {
+        let prev_hash = Self::hash_u8("0000000000000000000000000000000000000000000000000000000000000000");
         let prev_blockhash: BlockHash = BlockHash::hash(&prev_hash);
 
         let txdata = vec![Self::bells_genesis_tx()];
