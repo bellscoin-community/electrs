@@ -8,7 +8,7 @@ use bitcoin::blockdata::block::Block;
 use bitcoin::pow::CompactTarget;
 
 use bitcoin::hashes::{sha256d, Hash};
-// use hex::FromHex;
+use hex::FromHex;
 
 use core::default::Default;
 
