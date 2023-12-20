@@ -67,7 +67,7 @@ impl Chain {
     }
 
     pub(self) fn hash_u8(hash: &str) -> Vec<u8> {
-        let data = match <[u8; 64]>::from_hex(hash) {
+        let data = match <[u8; 32]>::from_hex(hash) {
             Ok(res) => res.to_vec(), // Convert array to Vec
             Err(err) => panic!("{}", err)
         };
