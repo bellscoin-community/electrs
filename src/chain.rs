@@ -66,7 +66,7 @@ impl Chain {
         }
     }
 
-    pub(self) fn hash_u8(hash: &str) -> Vec<u8> {
+    /*pub(self) fn hash_u8(hash: &str) -> Vec<u8> {
         let data = match <[u8; 32]>::from_hex(hash) {
             Ok(res) => res.to_vec(), // Convert array to Vec
             Err(err) => panic!("{}", err)
@@ -77,7 +77,7 @@ impl Chain {
 
     pub(self) fn hash_from_str(hash: &str) -> sha256d::Hash {
         return sha256d::Hash::hash(hex_lib!(hash)); //&Self::hash_u8(hash)
-    }
+    }*/
 
     pub(self) fn push_int_non_minimal(builder: script::Builder, data: i64) -> script::Builder {
         let mut buf = [0u8; 8];
