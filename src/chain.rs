@@ -38,6 +38,7 @@ impl Chain {
     // create an empty chain
     pub fn new(network: Network) -> Self {
         let genesis = bitcoin::blockdata::constants::genesis_block(network);
+        
         let genesis_hash = genesis.block_hash();
         Self {
             headers: vec![(genesis_hash, genesis.header)],
