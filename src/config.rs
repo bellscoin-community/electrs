@@ -251,6 +251,13 @@ impl Config {
                 );
                 std::process::exit(1);
             }),
+            (Network::Bitcoin, Some(magic)) => magic.parse().unwrap_or_else(|error| {
+                eprintln!(
+                    "Error: signet magic '{}' is not a valid hex string: {}",
+                    magic, error
+                );
+                std::process::exit(1);
+            }),
             (network, None) => network.magic(),
             (_, Some(_)) => {
                 eprintln!("Error: signet magic only available on signet");
