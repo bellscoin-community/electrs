@@ -78,11 +78,14 @@ fn read_cookie(path: &Path) -> Result<(String, String)> {
 
 fn rpc_connect(config: &Config) -> Result<Client> {
     let rpc_url = format!("http://{}", config.daemon_rpc_addr);
+    info!("connecting to rpc on {}", rpc_url);
+
     // Allow `wait_for_new_block` to take a bit longer before timing out.
     // See https://github.com/romanz/electrs/issues/495 for more details.
     let builder = jsonrpc::simple_http::SimpleHttpTransport::builder()
         .url(&rpc_url)?
         .timeout(config.jsonrpc_timeout);
+
     let builder = match config.daemon_auth.get_auth() {
         Auth::None => builder,
         Auth::UserPass(user, pass) => builder.auth(user, Some(pass)),
@@ -91,6 +94,7 @@ fn rpc_connect(config: &Config) -> Result<Client> {
             builder.auth(user, Some(pass))
         }
     };
+
     Ok(Client::from_jsonrpc(jsonrpc::Client::with_transport(
         builder.build(),
     )))
@@ -107,12 +111,15 @@ impl Daemon {
         exit_flag: &ExitFlag,
         metrics: &Metrics,
     ) -> Result<Self> {
+        info!("testing rpc connection...");
+
         let mut rpc = rpc_connect(config)?;
 
         loop {
             exit_flag
                 .poll()
                 .context("bitcoin RPC polling interrupted")?;
+
             match rpc_poll(&mut rpc, config.skip_block_download_wait) {
                 PollResult::Done(result) => {
                     result.context("bitcoind RPC polling failed")?;
@@ -125,6 +132,9 @@ impl Daemon {
         }
 
         let network_info = rpc.get_network_info()?;
+
+        info!("got network version {}", network_info.version);
+
         if network_info.version < 21_00_00 {
             bail!("electrs requires bitcoind 0.21+");
         }
@@ -144,7 +154,7 @@ impl Daemon {
             metrics,
             config.signet_magic,
         )?);
-        
+
         Ok(Self { p2p, rpc })
     }
 
