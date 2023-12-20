@@ -76,7 +76,7 @@ impl Chain {
     }
 
     pub(self) fn hash_from_str(hash: &str) -> sha256d::Hash {
-        return sha256d::Hash::hash(&Self::hash_u8(hash));
+        return sha256d::Hash::hash(hex_lib!(hash)); //&Self::hash_u8(hash)
     }
 
     pub(self) fn push_int_non_minimal(builder: script::Builder, data: i64) -> script::Builder {
@@ -122,13 +122,14 @@ impl Chain {
     }
 
     pub(self) fn get_block() -> Block {
-        let genesis_hash = Self::hash_from_str("e5be24df57c43a82d15c2f06bda961296948f8f8eb48501bed1efb929afe0698");
+        let genesis_hash = Self::hash_from_str("5b2a3f53f605d62c53e62932dac6925e3d74afa5a4b459745c36d42d0ed26a69");
         let prev_hash = Self::hash_u8("0000000000000000000000000000000000000000000000000000000000000000");
+        let prev_hash2 = hex_lib!("0000000000000000000000000000000000000000000000000000000000000000");
 
         let merkle_root: TxMerkleNode = genesis_hash.into();
         let prev_blockhash: BlockHash = BlockHash::hash(&prev_hash);
 
-        print!("test {}", prev_blockhash);
+        print!("test {}", prev_hash);
 
         let header = BlockHeader {
             version: bitcoin::blockdata::block::Version::ONE,
