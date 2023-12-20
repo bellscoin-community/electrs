@@ -115,6 +115,8 @@ impl Daemon {
 
         let mut rpc = rpc_connect(config)?;
 
+        info!("im i connected?");
+
         loop {
             exit_flag
                 .poll()
