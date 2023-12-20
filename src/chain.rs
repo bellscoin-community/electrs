@@ -122,14 +122,14 @@ impl Chain {
     }
 
     pub(self) fn get_block() -> Block {
-        let genesis_hash = Self::hash_from_str("5b2a3f53f605d62c53e62932dac6925e3d74afa5a4b459745c36d42d0ed26a69");
-        let prev_hash = Self::hash_u8("0000000000000000000000000000000000000000000000000000000000000000");
-        let prev_hash2 = hex_lib!("0000000000000000000000000000000000000000000000000000000000000000");
+        let genesis_hash = sha256d::Hash::hash(hex_lib!("5b2a3f53f605d62c53e62932dac6925e3d74afa5a4b459745c36d42d0ed26a69")); //Self::hash_from_str("");
+        //let prev_hash = Self::hash_u8("0000000000000000000000000000000000000000000000000000000000000000");
+        let prev_hash = hex_lib!("0000000000000000000000000000000000000000000000000000000000000000");
 
         let merkle_root: TxMerkleNode = genesis_hash.into();
         let prev_blockhash: BlockHash = BlockHash::hash(&prev_hash);
 
-        print!("test {}", prev_hash);
+        print!("test {}", &prev_hash);
 
         let header = BlockHeader {
             version: bitcoin::blockdata::block::Version::ONE,
