@@ -131,6 +131,8 @@ impl Daemon {
             }
         }
 
+        info!("getting rpc version");
+
         let network_info = rpc.get_network_info()?;
 
         info!("got network version {}", network_info.version);
